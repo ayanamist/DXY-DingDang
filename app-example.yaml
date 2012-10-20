@@ -1,0 +1,28 @@
+application: your-app-id
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: true
+
+env_variables:
+  DXY_USERNAME: "username"
+  DXY_PASSWORD: "password"
+
+libraries:
+- name: lxml
+  version: "2.3"
+
+handlers:
+- url: /robots.txt
+  static_files: /robots.txt
+  upload: /robots.txt
+
+- url: /dxy_cron
+  script: main.app
+  login: admin
+
+skip_files:
+- ^(.*/)?.*\.py[co]
+- ^(.*/)?.*\.md
+- ^(.*/)?\..*
+- ^[^-]*-example\..*

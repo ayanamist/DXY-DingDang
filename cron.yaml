@@ -1,0 +1,6 @@
+cron:
+- description: dxy dingdang
+  url: /dxy_cron
+  schedule: every day 03:00
+  target: 1
+  timezone: Asia/Shanghai
