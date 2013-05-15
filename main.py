@@ -8,15 +8,30 @@ import urlparse
 
 from google.appengine.api import app_identity
 from google.appengine.api import mail
+from google.appengine.api import urlfetch
 from google.appengine.ext import webapp
 
 import bs4
+
+
+MAX_TIMEOUT = 10
+MAX_RETRY = 3
 
 def url_fetch(url, data=None, headers=None):
     if headers is None:
         headers = dict()
     req = urllib2.Request(url, data=data, headers=headers)
-    r = urllib2.urlopen(req, timeout=60)
+    i = 0
+    while True:
+        try:
+            r = urllib2.urlopen(req, timeout=MAX_TIMEOUT)
+        except Exception:
+            if i < MAX_RETRY:
+                i += 1
+            else:
+                raise
+        else:
+            break
     r.content = r.read()
     r.headers = r.info()
     return r
@@ -78,6 +93,7 @@ class DXYPage(webapp.RequestHandler):
         logging.debug(ajax_response["ajaxResponse"]["message"])
 
     def setup(self):
+        urlfetch.set_default_fetch_deadline(MAX_TIMEOUT)
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
         urllib2.install_opener(opener)
 
